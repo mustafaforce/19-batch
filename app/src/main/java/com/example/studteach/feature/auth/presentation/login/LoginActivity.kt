@@ -3,14 +3,18 @@ package com.example.studteach.feature.auth.presentation.login
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.studteach.databinding.ActivityLoginBinding
 import com.example.studteach.feature.auth.presentation.register.RegisterActivity
 import com.example.studteach.feature.chat.presentation.studenthome.StudentHomeActivity
+import com.example.studteach.feature.chat.presentation.teacherhome.TeacherHomeActivity
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
+    private val viewModel: LoginViewModel by viewModels { LoginViewModel.Factory() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,18 +22,14 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupClickListeners()
+        observeViewModel()
     }
 
     private fun setupClickListeners() {
         binding.btnLogin.setOnClickListener {
-            val email = binding.etEmail.text.toString().trim()
-            val password = binding.etPassword.text.toString().trim()
-
-            if (validateInput(email, password)) {
-                showLoading(true)
-                // TODO: Implement login logic with Supabase
-                navigateToHome()
-            }
+            viewModel.onEmailChanged(binding.etEmail.text.toString().trim())
+            viewModel.onPasswordChanged(binding.etPassword.text.toString().trim())
+            viewModel.login()
         }
 
         binding.tvRegisterLink.setOnClickListener {
@@ -37,24 +37,26 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun validateInput(email: String, password: String): Boolean {
-        var isValid = true
+    private fun observeViewModel() {
+        viewModel.uiState.observe(this) { state ->
+            showLoading(state.isLoading)
 
-        if (email.isEmpty()) {
-            binding.tilEmail.error = "Email is required"
-            isValid = false
-        } else {
-            binding.tilEmail.error = null
+            state.emailError?.let {
+                binding.tilEmail.error = it
+            } ?: run { binding.tilEmail.error = null }
+
+            state.passwordError?.let {
+                binding.tilPassword.error = it
+            } ?: run { binding.tilPassword.error = null }
+
+            state.errorMessage?.let { message ->
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            }
+
+            if (state.isSuccess && state.loggedInUser != null) {
+                navigateToHome(state.loggedInUser!!)
+            }
         }
-
-        if (password.isEmpty()) {
-            binding.tilPassword.error = "Password is required"
-            isValid = false
-        } else {
-            binding.tilPassword.error = null
-        }
-
-        return isValid
     }
 
     private fun showLoading(isLoading: Boolean) {
@@ -62,9 +64,15 @@ class LoginActivity : AppCompatActivity() {
         binding.btnLogin.isEnabled = !isLoading
     }
 
-    private fun navigateToHome() {
-        // TODO: Check user role and navigate to appropriate home
-        startActivity(Intent(this, StudentHomeActivity::class.java))
+    private fun navigateToHome(user: com.example.studteach.feature.auth.domain.model.User) {
+        val isStudent = user.role == "student"
+        val intent = if (isStudent) {
+            Intent(this, StudentHomeActivity::class.java)
+        } else {
+            Intent(this, TeacherHomeActivity::class.java)
+        }
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
         finish()
     }
 }

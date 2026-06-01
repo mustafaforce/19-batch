@@ -1,19 +1,33 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "com.example.studteach"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.studteach"
-        minSdk = 24
-        targetSdk = 35
+        minSdk = 26
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val envFile = file("${rootProject.projectDir}/.env")
+        val env = mutableMapOf<String, String>()
+        if (envFile.exists()) {
+            envFile.readLines().forEach { line ->
+                val parts = line.split("=", limit = 2)
+                if (parts.size == 2) {
+                    env[parts[0].trim()] = parts[1].trim()
+                }
+            }
+        }
+        buildConfigField("String", "SUPABASE_URL", "\"${env["SUPABASE_URL"] ?: ""}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${env["SUPABASE_ANON_KEY"] ?: ""}\"")
     }
 
     buildTypes {
@@ -31,6 +45,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -48,6 +63,13 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.supabase.kt)
+    implementation(libs.supabase.auth.kt)
+    implementation(libs.supabase.postgrest.kt)
+    implementation(libs.supabase.realtime.kt)
+    implementation(libs.ktor.client.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
