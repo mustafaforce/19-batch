@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.studteach.R
 import com.example.studteach.databinding.ActivityChatBinding
 
 class ChatActivity : AppCompatActivity() {
@@ -11,6 +12,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
     private var userId: String = ""
     private var userName: String = ""
+    private var isAvailable: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,14 +21,27 @@ class ChatActivity : AppCompatActivity() {
 
         userId = intent.getStringExtra("USER_ID") ?: ""
         userName = intent.getStringExtra("USER_NAME") ?: ""
+        isAvailable = intent.getBooleanExtra("IS_AVAILABLE", false)
 
         setupToolbar()
         setupRecyclerView()
         setupInput()
+        applyAvailability()
+    }
+
+    private fun applyAvailability() {
+        showChatClosed(!isAvailable)
     }
 
     private fun setupToolbar() {
         binding.tvName.text = userName
+        if (isAvailable) {
+            binding.tvStatus.text = getString(R.string.label_online)
+            binding.tvStatus.setTextColor(getColor(R.color.success))
+        } else {
+            binding.tvStatus.text = getString(R.string.label_offline)
+            binding.tvStatus.setTextColor(getColor(R.color.disabled))
+        }
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
