@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StudTeach</string>
+    <string name="app_tagline">Your Academic Companion</string>
+
+    <string name="hint_email">Email address</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_name">Full name</string>
+    <string name="hint_confirm_password">Confirm password</string>
+
+    <string name="btn_login">Log In</string>
+    <string name="btn_register">Create Account</string>
+    <string name="btn_logout">Log Out</string>
+    <string name="btn_send">Send</string>
+    <string name="btn_set_availability">Set Availability</string>
+    <string name="btn_save">Save</string>
+
+    <string name="link_no_account">Don\'t have an account? Register</string>
+    <string name="link_have_account">Already have an account? Log In</string>
+
+    <string name="label_student">Student</string>
+    <string name="label_teacher">Teacher</string>
+    <string name="label_select_role">Select your role</string>
+    <string name="label_welcome_back">Welcome Back</string>
+    <string name="label_create_account">Create Account</string>
+    <string name="label_login_subtitle">Log in to continue learning</string>
+    <string name="label_register_subtitle">Join your academic community</string>
+
+    <string name="title_student_home">My Teachers</string>
+    <string name="title_teacher_home">Dashboard</string>
+    <string name="title_chat">Chat</string>
+
+    <string name="label_available">Available</string>
+    <string name="label_unavailable">Unavailable</string>
+    <string name="label_availability">Availability</string>
+    <string name="label_conversations">Conversations</string>
+    <string name="label_from">From</string>
+    <string name="label_to">To</string>
+    <string name="label_no_teachers">No teachers available</string>
+    <string name="label_no_conversations">No conversations yet</string>
+    <string name="label_type_message">Type a message…</string>
+    <string name="label_online">Online</string>
+    <string name="label_offline">Offline</string>
+    <string name="label_chat_closed">Chat is currently closed. Teacher is not available.</string>
+
+    <string name="greeting_student">Hello, %1$s!</string>
+    <string name="greeting_teacher">Welcome, %1$s</string>
+
+    <string name="ic_back">Back</string>
+    <string name="ic_person">Person</string>
+</resources>

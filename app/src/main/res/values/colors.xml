@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#4A6CF7</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#DDE1FF</color>
+    <color name="on_primary_container">#001257</color>
+
+    <color name="secondary">#5B5D72</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="secondary_container">#E0E1F9</color>
+
+    <color name="tertiary">#77538C</color>
+    <color name="on_tertiary">#FFFFFF</color>
+
+    <color name="background">#FEFBFF</color>
+    <color name="on_background">#1B1B1F</color>
+
+    <color name="surface">#FEFBFF</color>
+    <color name="on_surface">#1B1B1F</color>
+    <color name="surface_variant">#E2E1EC</color>
+    <color name="on_surface_variant">#45464F</color>
+    <color name="surface_container">#F2EFF4</color>
+    <color name="surface_container_high">#ECE9EE</color>
+
+    <color name="outline">#767680</color>
+    <color name="outline_variant">#C6C5D0</color>
+
+    <color name="error">#BA1A1A</color>
+    <color name="on_error">#FFFFFF</color>
+
+    <color name="success">#2E7D32</color>
+    <color name="on_success">#FFFFFF</color>
+
+    <color name="chat_sent">#4A6CF7</color>
+    <color name="on_chat_sent">#FFFFFF</color>
+    <color name="chat_received">#F0F0F5</color>
+    <color name="on_chat_received">#1B1B1F</color>
+
+    <color name="divider">#E0E0E0</color>
+    <color name="hint_text">#9E9E9E</color>
+    <color name="disabled">#BDBDBD</color>
+</resources>
