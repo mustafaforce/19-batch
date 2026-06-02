@@ -12,6 +12,7 @@ import com.example.studteach.StudTeachApp
 import com.example.studteach.databinding.ActivityTeacherHomeBinding
 import com.example.studteach.feature.auth.data.AuthRepositoryImpl
 import com.example.studteach.feature.auth.presentation.login.LoginActivity
+import com.example.studteach.feature.chat.domain.model.Conversation
 import com.example.studteach.feature.chat.presentation.chatroom.ChatActivity
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 class TeacherHomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTeacherHomeBinding
+    private lateinit var conversationAdapter: ConversationAdapter
     private val viewModel: TeacherHomeViewModel by viewModels { TeacherHomeViewModel.Factory() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +33,7 @@ class TeacherHomeActivity : AppCompatActivity() {
 
         setupToolbar()
         setupAvailability()
-        setupRecyclerView()
+        setupConversations()
         observeViewModel()
 
         viewModel.loadData()
@@ -78,6 +80,54 @@ class TeacherHomeActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupConversations() {
+        conversationAdapter = ConversationAdapter { conversation ->
+            val intent = Intent(this, ChatActivity::class.java).apply {
+                putExtra("USER_ID", conversation.studentId)
+                putExtra("USER_NAME", conversation.studentName)
+                putExtra("IS_AVAILABLE", true)
+            }
+            startActivity(intent)
+        }
+
+        binding.rvConversations.apply {
+            layoutManager = LinearLayoutManager(this@TeacherHomeActivity)
+            adapter = conversationAdapter
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.uiState.observe(this) { state ->
+            binding.toolbar.title = state.teacherName.ifEmpty {
+                getString(R.string.title_teacher_home)
+            }
+
+            binding.switchAvailability.isChecked = state.isActive
+            binding.switchAvailability.text = if (state.isActive) "Available" else "Unavailable"
+            binding.btnTimeFrom.text = state.timeFrom
+            binding.btnTimeTo.text = state.timeTo
+            binding.btnSaveAvailability.isEnabled = !state.isSaving
+
+            if (state.conversations.isEmpty()) {
+                binding.tvEmpty.visibility = View.VISIBLE
+                binding.rvConversations.visibility = View.GONE
+            } else {
+                binding.tvEmpty.visibility = View.GONE
+                binding.rvConversations.visibility = View.VISIBLE
+                conversationAdapter.submitList(state.conversations)
+            }
+
+            if (state.saveSuccess) {
+                Toast.makeText(this, "Availability saved", Toast.LENGTH_SHORT).show()
+                viewModel.clearSaveSuccess()
+            }
+
+            state.errorMessage?.let { message ->
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
     private fun showTimePicker(onTimeSet: (Int, Int) -> Unit) {
         val picker = MaterialTimePicker.Builder()
             .setTimeFormat(TimeFormat.CLOCK_12H)
@@ -101,37 +151,5 @@ class TeacherHomeActivity : AppCompatActivity() {
             else -> hour
         }
         return String.format("%02d:%02d %s", displayHour, minute, amPm)
-    }
-
-    private fun setupRecyclerView() {
-        binding.rvConversations.apply {
-            layoutManager = LinearLayoutManager(this@TeacherHomeActivity)
-        }
-    }
-
-    private fun observeViewModel() {
-        viewModel.uiState.observe(this) { state ->
-            binding.toolbar.title = if (state.teacherName.isNotEmpty()) {
-                state.teacherName
-            } else {
-                getString(com.example.studteach.R.string.title_teacher_home)
-            }
-
-            binding.switchAvailability.isChecked = state.isActive
-            binding.switchAvailability.text = if (state.isActive) "Available" else "Unavailable"
-            binding.btnTimeFrom.text = state.timeFrom
-            binding.btnTimeTo.text = state.timeTo
-
-            binding.btnSaveAvailability.isEnabled = !state.isSaving
-
-            if (state.saveSuccess) {
-                Toast.makeText(this, "Availability saved", Toast.LENGTH_SHORT).show()
-                viewModel.clearSaveSuccess()
-            }
-
-            state.errorMessage?.let { message ->
-                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-            }
-        }
     }
 }

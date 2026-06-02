@@ -8,16 +8,19 @@ import androidx.lifecycle.viewModelScope
 import com.example.studteach.StudTeachApp
 import com.example.studteach.feature.auth.data.AuthRepositoryImpl
 import com.example.studteach.feature.auth.domain.usecase.GetCurrentUserUseCase
+import com.example.studteach.feature.chat.data.ChatRepository
 import com.example.studteach.feature.chat.data.TeacherAvailabilityRepositoryImpl
-import com.example.studteach.feature.chat.domain.model.TeacherAvailability
+import com.example.studteach.feature.chat.domain.model.Conversation
 import com.example.studteach.feature.chat.domain.usecase.GetAvailabilityUseCase
+import com.example.studteach.feature.chat.domain.usecase.GetConversationsUseCase
 import com.example.studteach.feature.chat.domain.usecase.SetAvailabilityUseCase
 import kotlinx.coroutines.launch
 
 class TeacherHomeViewModel(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getAvailabilityUseCase: GetAvailabilityUseCase,
-    private val setAvailabilityUseCase: SetAvailabilityUseCase
+    private val setAvailabilityUseCase: SetAvailabilityUseCase,
+    private val getConversationsUseCase: GetConversationsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData(TeacherHomeUiState())
@@ -40,6 +43,17 @@ class TeacherHomeViewModel(
                     timeTo = availability.timeTo
                 )
             }
+
+            loadConversations()
+        }
+    }
+
+    private suspend fun loadConversations() {
+        try {
+            val conversations = getConversationsUseCase(teacherId)
+            _uiState.value = _uiState.value?.copy(conversations = conversations)
+        } catch (e: Exception) {
+            // Silently fail; conversations just stay empty
         }
     }
 
@@ -91,10 +105,12 @@ class TeacherHomeViewModel(
             val app = StudTeachApp.instance
             val authRepo = AuthRepositoryImpl(app.supabase)
             val availabilityRepo = TeacherAvailabilityRepositoryImpl(app.supabase)
+            val chatRepo = ChatRepository(app.supabase)
             return TeacherHomeViewModel(
                 GetCurrentUserUseCase(authRepo),
                 GetAvailabilityUseCase(availabilityRepo),
-                SetAvailabilityUseCase(availabilityRepo)
+                SetAvailabilityUseCase(availabilityRepo),
+                GetConversationsUseCase(chatRepo)
             ) as T
         }
     }
@@ -107,5 +123,6 @@ data class TeacherHomeUiState(
     val timeTo: String = "05:00 PM",
     val isSaving: Boolean = false,
     val saveSuccess: Boolean = false,
+    val conversations: List<Conversation> = emptyList(),
     val errorMessage: String? = null
 )

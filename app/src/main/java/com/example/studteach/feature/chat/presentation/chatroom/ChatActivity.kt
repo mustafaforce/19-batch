@@ -2,6 +2,8 @@ package com.example.studteach.feature.chat.presentation.chatroom
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.studteach.R
@@ -10,31 +12,28 @@ import com.example.studteach.databinding.ActivityChatBinding
 class ChatActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChatBinding
-    private var userId: String = ""
-    private var userName: String = ""
-    private var isAvailable: Boolean = false
+    private val viewModel: ChatViewModel by viewModels { ChatViewModel.Factory() }
+    private var adapter: ChatAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        userId = intent.getStringExtra("USER_ID") ?: ""
-        userName = intent.getStringExtra("USER_NAME") ?: ""
-        isAvailable = intent.getBooleanExtra("IS_AVAILABLE", false)
+        val userId = intent.getStringExtra("USER_ID") ?: ""
+        val userName = intent.getStringExtra("USER_NAME") ?: ""
+        val isAvailable = intent.getBooleanExtra("IS_AVAILABLE", false)
 
-        setupToolbar()
+        setupToolbar(userName, isAvailable)
         setupRecyclerView()
         setupInput()
-        applyAvailability()
+        observeViewModel()
+
+        viewModel.initialize(userId, userName, isAvailable)
     }
 
-    private fun applyAvailability() {
-        showChatClosed(!isAvailable)
-    }
-
-    private fun setupToolbar() {
-        binding.tvName.text = userName
+    private fun setupToolbar(name: String, isAvailable: Boolean) {
+        binding.tvName.text = name
         if (isAvailable) {
             binding.tvStatus.text = getString(R.string.label_online)
             binding.tvStatus.setTextColor(getColor(R.color.success))
@@ -42,9 +41,7 @@ class ChatActivity : AppCompatActivity() {
             binding.tvStatus.text = getString(R.string.label_offline)
             binding.tvStatus.setTextColor(getColor(R.color.disabled))
         }
-        binding.toolbar.setNavigationOnClickListener {
-            finish()
-        }
+        binding.toolbar.setNavigationOnClickListener { finish() }
     }
 
     private fun setupRecyclerView() {
@@ -52,24 +49,42 @@ class ChatActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@ChatActivity).apply {
                 stackFromEnd = true
             }
-            // TODO: Set adapter with real data from Supabase Realtime
         }
-
-        // TODO: Subscribe to Supabase Realtime for new messages
     }
 
     private fun setupInput() {
         binding.btnSend.setOnClickListener {
-            val message = binding.etMessage.text.toString().trim()
-            if (message.isNotEmpty()) {
-                sendMessage(message)
+            val content = binding.etMessage.text.toString().trim()
+            if (content.isNotEmpty()) {
+                viewModel.sendMessage(content)
                 binding.etMessage.text.clear()
             }
         }
     }
 
-    private fun sendMessage(message: String) {
-        // TODO: Send message to Supabase
+    private fun observeViewModel() {
+        viewModel.uiState.observe(this) { state ->
+            val currentId = viewModel.getCurrentUserId()
+
+            if (currentId.isNotEmpty() && (adapter == null || adapter?.currentUserId != currentId)) {
+                adapter = ChatAdapter(currentId)
+                binding.rvMessages.adapter = adapter
+            }
+
+            val msgCount = adapter?.itemCount ?: 0
+            if (state.messages.size != msgCount) {
+                adapter?.setMessages(state.messages)
+                if (state.messages.isNotEmpty()) {
+                    binding.rvMessages.scrollToPosition(state.messages.size - 1)
+                }
+            }
+
+            showChatClosed(!state.isAvailable)
+
+            state.errorMessage?.let { message ->
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun showChatClosed(isClosed: Boolean) {
