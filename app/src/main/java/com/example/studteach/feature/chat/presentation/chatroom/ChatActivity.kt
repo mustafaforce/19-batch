@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.example.studteach.R
 import com.example.studteach.databinding.ActivityChatBinding
 
@@ -27,8 +29,9 @@ class ChatActivity : AppCompatActivity() {
         val userId = intent.getStringExtra("USER_ID") ?: ""
         val userName = intent.getStringExtra("USER_NAME") ?: ""
         val isAvailable = intent.getBooleanExtra("IS_AVAILABLE", false)
+        val avatarUrl = intent.getStringExtra("AVATAR_URL")
 
-        setupToolbar(userName, isAvailable)
+        setupToolbar(userName, isAvailable, avatarUrl)
         setupRecyclerView()
         setupInput()
         observeViewModel()
@@ -55,7 +58,7 @@ class ChatActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupToolbar(name: String, isAvailable: Boolean) {
+    private fun setupToolbar(name: String, isAvailable: Boolean, avatarUrl: String?) {
         binding.tvName.text = name
         if (isAvailable) {
             binding.tvStatus.text = getString(R.string.label_online)
@@ -65,6 +68,15 @@ class ChatActivity : AppCompatActivity() {
             binding.tvStatus.setTextColor(getColor(R.color.disabled))
         }
         binding.toolbar.setNavigationOnClickListener { finish() }
+
+        avatarUrl?.let { url ->
+            binding.ivAvatar.load(url) {
+                crossfade(true)
+                placeholder(R.drawable.ic_person)
+                error(R.drawable.ic_person)
+                transformations(CircleCropTransformation())
+            }
+        }
     }
 
     private fun setupRecyclerView() {

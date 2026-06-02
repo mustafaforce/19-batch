@@ -82,6 +82,40 @@ class AuthRepositoryImpl(
         }
     }
 
+    override suspend fun updateProfile(
+        fullName: String,
+        course: String?,
+        level: String?,
+        term: String?,
+        department: String?,
+        avatarUrl: String?
+    ): Result<User> {
+        return runCatching {
+            val session = supabase.auth.currentSessionOrNull()
+            val userId = session?.user?.id
+                ?: throw Exception("Not authenticated")
+
+            val updates = buildJsonObject {
+                put("full_name", JsonPrimitive(fullName))
+                put("course", JsonPrimitive(course))
+                put("level", JsonPrimitive(level))
+                put("term", JsonPrimitive(term))
+                put("department", JsonPrimitive(department))
+                put("avatar_url", JsonPrimitive(avatarUrl))
+            }
+
+            supabase.postgrest.from("profiles")
+                .update(updates) {
+                    filter {
+                        eq("id", userId)
+                    }
+                    select()
+                }
+                .decodeList<User>()
+                .first()
+        }
+    }
+
     override suspend fun logout() {
         supabase.auth.signOut()
     }

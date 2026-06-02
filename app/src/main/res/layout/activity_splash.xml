@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_sm"
         android:text="@string/app_tagline"
-        android:textColor="@color/primary_container"
+        android:textColor="@color/on_primary"
         android:textSize="@dimen/text_size_md"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

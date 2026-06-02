@@ -8,5 +8,7 @@ data class TeacherProfile(
     val id: String = "",
     @SerialName("full_name")
     val fullName: String = "",
-    val course: String? = null
+    val course: String? = null,
+    @SerialName("avatar_url")
+    val avatarUrl: String? = null
 )

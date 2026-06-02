@@ -22,47 +22,55 @@
         <item name="colorOnError">@color/on_error</item>
 
         <item name="android:statusBarColor">@color/primary</item>
-        <item name="android:navigationBarColor">@color/surface</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="Theme.Studteach.Splash" parent="Theme.Studteach">
         <item name="android:statusBarColor">@color/primary</item>
     </style>
 
+    <!-- Primary Button: Charcoal fill, off-white text, inset shadow feel -->
     <style name="Widget.Studteach.Button.Primary" parent="Widget.Material3.Button">
         <item name="android:backgroundTint">@color/primary</item>
         <item name="android:textColor">@color/on_primary</item>
         <item name="android:textSize">14sp</item>
         <item name="android:paddingTop">10dp</item>
         <item name="android:paddingBottom">10dp</item>
-        <item name="cornerRadius">12dp</item>
+        <item name="cornerRadius">6dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
     </style>
 
+    <!-- Outline Button: Transparent with charcoal border -->
     <style name="Widget.Studteach.Button.Outline" parent="Widget.Material3.Button.OutlinedButton">
-        <item name="strokeColor">@color/primary</item>
-        <item name="android:textColor">@color/primary</item>
+        <item name="strokeColor">@color/outline</item>
+        <item name="android:textColor">@color/on_background</item>
         <item name="android:textSize">14sp</item>
         <item name="android:paddingTop">10dp</item>
         <item name="android:paddingBottom">10dp</item>
-        <item name="cornerRadius">12dp</item>
+        <item name="cornerRadius">6dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
     </style>
 
+    <!-- Text Input: Cream bg, light border, 6dp corners -->
     <style name="Widget.Studteach.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
-        <item name="boxStrokeColor">@color/primary</item>
-        <item name="boxCornerRadiusTopStart">12dp</item>
-        <item name="boxCornerRadiusTopEnd">12dp</item>
-        <item name="boxCornerRadiusBottomStart">12dp</item>
-        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxStrokeColor">@color/outline_variant</item>
+        <item name="boxCornerRadiusTopStart">6dp</item>
+        <item name="boxCornerRadiusTopEnd">6dp</item>
+        <item name="boxCornerRadiusBottomStart">6dp</item>
+        <item name="boxCornerRadiusBottomEnd">6dp</item>
     </style>
 
-    <style name="Widget.Studteach.Card" parent="Widget.Material3.CardView.Elevated">
-        <item name="cardCornerRadius">16dp</item>
-        <item name="cardElevation">2dp</item>
+    <!-- Card: Cream bg, 1px border, no shadow -->
+    <style name="Widget.Studteach.Card" parent="Widget.Material3.CardView.Outlined">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">0dp</item>
         <item name="contentPadding">16dp</item>
+        <item name="cardBackgroundColor">@color/surface_container_high</item>
+        <item name="strokeColor">@color/surface_variant</item>
+        <item name="strokeWidth">1dp</item>
     </style>
 
 </resources>

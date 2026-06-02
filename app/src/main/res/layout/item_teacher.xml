@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_md">
+        android:padding="4dp">
 
         <ImageView
             android:id="@+id/ivAvatar"
@@ -70,16 +70,6 @@
             android:textSize="@dimen/text_size_xs"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/viewStatus" />
-
-        <ImageView
-            android:id="@+id/ivChatIcon"
-            android:layout_width="@dimen/icon_size_md"
-            android:layout_height="@dimen/icon_size_md"
-            android:layout_marginTop="@dimen/spacing_sm"
-            android:contentDescription="@string/title_chat"
-            android:src="@drawable/ic_chat"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvAvailability" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

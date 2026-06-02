@@ -26,6 +26,7 @@ class TeacherRepository(
                 id = teacher.id,
                 fullName = teacher.fullName,
                 course = teacher.course,
+                avatarUrl = teacher.avatarUrl,
                 isAvailable = avail?.isActive == true,
                 timeFrom = avail?.timeFrom ?: "",
                 timeTo = avail?.timeTo ?: ""
