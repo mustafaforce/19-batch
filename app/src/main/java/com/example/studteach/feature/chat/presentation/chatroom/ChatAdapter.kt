@@ -6,6 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.studteach.databinding.ItemMessageReceivedBinding
 import com.example.studteach.databinding.ItemMessageSentBinding
 import com.example.studteach.feature.chat.domain.model.Message
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class ChatAdapter(
     val currentUserId: String
@@ -20,7 +23,9 @@ class ChatAdapter(
         private fun formatTimestamp(timestamp: String): String {
             if (timestamp.isBlank()) return ""
             return try {
-                timestamp.substring(11, 16)
+                val instant = Instant.parse(timestamp)
+                val local = instant.atZone(ZoneId.systemDefault())
+                local.format(DateTimeFormatter.ofPattern("HH:mm"))
             } catch (e: Exception) {
                 ""
             }

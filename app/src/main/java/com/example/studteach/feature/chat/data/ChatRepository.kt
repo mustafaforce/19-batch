@@ -13,6 +13,9 @@ import io.github.jan.supabase.realtime.postgresChangeFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class ChatRepository(
     private val supabase: SupabaseClient
@@ -126,5 +129,13 @@ class ChatRepository(
         }.sortedByDescending { it.lastMessageTime }
     }
 
-    private fun formatTimestamp(timestamp: String): String = timestamp.substring(11, 16)
+    private fun formatTimestamp(timestamp: String): String {
+        return try {
+            val instant = Instant.parse(timestamp)
+            val local = instant.atZone(ZoneId.systemDefault())
+            local.format(DateTimeFormatter.ofPattern("HH:mm"))
+        } catch (e: Exception) {
+            ""
+        }
+    }
 }
