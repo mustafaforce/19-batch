@@ -75,7 +75,6 @@ class ChatViewModel(
                         }
                     }
             } catch (e: Exception) {
-                // Realtime connection may fail; history is still shown
             }
         }
     }
@@ -83,6 +82,11 @@ class ChatViewModel(
     fun sendMessage(content: String) {
         viewModelScope.launch {
             sendMessageUseCase(currentUserId, otherUserId, content)
+                .onSuccess { message ->
+                    val current = _uiState.value?.messages?.toMutableList() ?: mutableListOf()
+                    current.add(message)
+                    _uiState.value = _uiState.value?.copy(messages = current)
+                }
                 .onFailure { error ->
                     _uiState.value = _uiState.value?.copy(
                         errorMessage = error.message ?: "Failed to send"

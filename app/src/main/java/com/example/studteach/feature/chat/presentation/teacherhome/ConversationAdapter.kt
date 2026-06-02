@@ -36,7 +36,11 @@ class ConversationAdapter(
 
         fun bind(conversation: Conversation) {
             binding.tvStudentName.text = conversation.studentName
-            binding.tvLastMessage.text = conversation.lastMessage
+            binding.tvLastMessage.text = if (conversation.lastMessageIsMine) {
+                "You: ${conversation.lastMessage}"
+            } else {
+                conversation.lastMessage
+            }
             binding.tvTime.text = conversation.lastMessageTime
 
             binding.root.setOnClickListener {

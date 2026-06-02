@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.studteach.R
 import com.example.studteach.StudTeachApp
@@ -31,12 +33,25 @@ class TeacherHomeActivity : AppCompatActivity() {
         binding = ActivityTeacherHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        applyToolbarInsets()
+
         setupToolbar()
         setupAvailability()
         setupConversations()
         observeViewModel()
 
         viewModel.loadData()
+    }
+
+    private fun applyToolbarInsets() {
+        val toolbarBaseHeight = resources.getDimensionPixelSize(R.dimen.toolbar_height)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { toolbar, insets ->
+            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            toolbar.layoutParams.height = toolbarBaseHeight + statusBar.top
+            toolbar.setPadding(0, statusBar.top, 0, 0)
+            insets
+        }
     }
 
     private fun setupToolbar() {
@@ -55,10 +70,6 @@ class TeacherHomeActivity : AppCompatActivity() {
     }
 
     private fun setupAvailability() {
-        binding.switchAvailability.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.onToggleActive(isChecked)
-        }
-
         binding.btnTimeFrom.setOnClickListener {
             showTimePicker { hour, minute ->
                 val time = formatTime(hour, minute)
@@ -98,12 +109,12 @@ class TeacherHomeActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         viewModel.uiState.observe(this) { state ->
-            binding.toolbar.title = state.teacherName.ifEmpty {
+            binding.toolbar.title = if (state.teacherName.isNotEmpty()) {
+                "Hello, ${state.teacherName}"
+            } else {
                 getString(R.string.title_teacher_home)
             }
 
-            binding.switchAvailability.isChecked = state.isActive
-            binding.switchAvailability.text = if (state.isActive) "Available" else "Unavailable"
             binding.btnTimeFrom.text = state.timeFrom
             binding.btnTimeTo.text = state.timeTo
             binding.btnSaveAvailability.isEnabled = !state.isSaving

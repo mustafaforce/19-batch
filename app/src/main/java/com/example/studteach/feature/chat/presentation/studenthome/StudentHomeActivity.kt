@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.studteach.R
 import com.example.studteach.StudTeachApp
@@ -29,11 +31,24 @@ class StudentHomeActivity : AppCompatActivity() {
         binding = ActivityStudentHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        applyToolbarInsets()
+
         setupToolbar()
         setupRecyclerView()
         observeViewModel()
 
         viewModel.loadTeachers()
+    }
+
+    private fun applyToolbarInsets() {
+        val toolbarBaseHeight = resources.getDimensionPixelSize(R.dimen.toolbar_height)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { toolbar, insets ->
+            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            toolbar.layoutParams.height = toolbarBaseHeight + statusBar.top
+            toolbar.setPadding(0, statusBar.top, 0, 0)
+            insets
+        }
     }
 
     private fun setupToolbar() {

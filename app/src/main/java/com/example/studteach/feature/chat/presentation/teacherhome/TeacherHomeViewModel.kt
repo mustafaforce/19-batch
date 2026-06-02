@@ -38,7 +38,6 @@ class TeacherHomeViewModel(
             val availability = getAvailabilityUseCase(teacherId)
             if (availability != null) {
                 _uiState.value = _uiState.value?.copy(
-                    isActive = availability.isActive,
                     timeFrom = availability.timeFrom,
                     timeTo = availability.timeTo
                 )
@@ -57,10 +56,6 @@ class TeacherHomeViewModel(
         }
     }
 
-    fun onToggleActive(isActive: Boolean) {
-        _uiState.value = _uiState.value?.copy(isActive = isActive)
-    }
-
     fun onTimeFromChanged(time: String) {
         _uiState.value = _uiState.value?.copy(timeFrom = time)
     }
@@ -76,7 +71,7 @@ class TeacherHomeViewModel(
         viewModelScope.launch {
             setAvailabilityUseCase(
                 teacherId = teacherId,
-                isActive = state.isActive,
+                isActive = true,
                 timeFrom = state.timeFrom,
                 timeTo = state.timeTo
             )
@@ -118,7 +113,6 @@ class TeacherHomeViewModel(
 
 data class TeacherHomeUiState(
     val teacherName: String = "",
-    val isActive: Boolean = false,
     val timeFrom: String = "09:00 AM",
     val timeTo: String = "05:00 PM",
     val isSaving: Boolean = false,

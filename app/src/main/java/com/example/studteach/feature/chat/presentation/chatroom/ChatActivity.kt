@@ -5,6 +5,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.studteach.R
 import com.example.studteach.databinding.ActivityChatBinding
@@ -20,6 +22,8 @@ class ChatActivity : AppCompatActivity() {
         binding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        applyWindowInsets()
+
         val userId = intent.getStringExtra("USER_ID") ?: ""
         val userName = intent.getStringExtra("USER_NAME") ?: ""
         val isAvailable = intent.getBooleanExtra("IS_AVAILABLE", false)
@@ -30,6 +34,25 @@ class ChatActivity : AppCompatActivity() {
         observeViewModel()
 
         viewModel.initialize(userId, userName, isAvailable)
+    }
+
+    private fun applyWindowInsets() {
+        val toolbarBaseHeight = resources.getDimensionPixelSize(R.dimen.toolbar_height)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+
+            // Push toolbar content below status bar
+            binding.toolbar.layoutParams.height = toolbarBaseHeight + statusBar.top
+            binding.toolbar.setPadding(0, statusBar.top, 0, 0)
+
+            // Push bottom content above keyboard / nav bar
+            view.setPadding(0, 0, 0, maxOf(ime.bottom, navBar.bottom))
+
+            insets
+        }
     }
 
     private fun setupToolbar(name: String, isAvailable: Boolean) {

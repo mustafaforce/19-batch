@@ -33,7 +33,8 @@ class ChatRepository(
                 ) {
                     select()
                 }
-                .decodeAs<Message>()
+                .decodeList<Message>()
+                .first()
         }
     }
 
@@ -118,7 +119,8 @@ class ChatRepository(
                 studentId = sid,
                 studentName = student?.fullName ?: "Unknown",
                 lastMessage = msg.content,
-                lastMessageTime = formatTimestamp(msg.createdAt)
+                lastMessageTime = formatTimestamp(msg.createdAt),
+                lastMessageIsMine = msg.senderId == teacherId
             )
         }.sortedByDescending { it.lastMessageTime }
     }
