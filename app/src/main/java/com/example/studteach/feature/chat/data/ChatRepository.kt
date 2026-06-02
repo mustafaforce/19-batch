@@ -118,6 +118,7 @@ class ChatRepository(
             Conversation(
                 studentId = sid,
                 studentName = student?.fullName ?: "Unknown",
+                avatarUrl = student?.avatarUrl,
                 lastMessage = msg.content,
                 lastMessageTime = formatTimestamp(msg.createdAt),
                 lastMessageIsMine = msg.senderId == teacherId

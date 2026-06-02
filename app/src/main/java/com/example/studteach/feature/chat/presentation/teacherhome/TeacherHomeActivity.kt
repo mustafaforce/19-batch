@@ -16,6 +16,7 @@ import com.example.studteach.feature.auth.data.AuthRepositoryImpl
 import com.example.studteach.feature.auth.presentation.login.LoginActivity
 import com.example.studteach.feature.chat.domain.model.Conversation
 import com.example.studteach.feature.chat.presentation.chatroom.ChatActivity
+import com.example.studteach.feature.setting.presentation.profile.ProfileActivity
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +44,11 @@ class TeacherHomeActivity : AppCompatActivity() {
         viewModel.loadData()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshName()
+    }
+
     private fun applyToolbarInsets() {
         val toolbarBaseHeight = resources.getDimensionPixelSize(R.dimen.toolbar_height)
 
@@ -56,16 +62,23 @@ class TeacherHomeActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         binding.toolbar.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.action_logout) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    AuthRepositoryImpl(StudTeachApp.instance.supabase).logout()
+            when (item.itemId) {
+                R.id.action_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                    true
                 }
-                val intent = Intent(this, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-                true
-            } else false
+                R.id.action_logout -> {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        AuthRepositoryImpl(StudTeachApp.instance.supabase).logout()
+                    }
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                    true
+                }
+                else -> false
+            }
         }
     }
 
@@ -97,6 +110,7 @@ class TeacherHomeActivity : AppCompatActivity() {
                 putExtra("USER_ID", conversation.studentId)
                 putExtra("USER_NAME", conversation.studentName)
                 putExtra("IS_AVAILABLE", true)
+                putExtra("AVATAR_URL", conversation.avatarUrl)
             }
             startActivity(intent)
         }

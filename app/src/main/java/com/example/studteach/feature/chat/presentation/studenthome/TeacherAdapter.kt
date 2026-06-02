@@ -3,6 +3,9 @@ package com.example.studteach.feature.chat.presentation.studenthome
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.transform.CircleCropTransformation
+import com.example.studteach.R
 import com.example.studteach.databinding.ItemTeacherBinding
 import com.example.studteach.feature.chat.data.TeacherWithAvailability
 
@@ -57,7 +60,18 @@ class TeacherAdapter(
                 )
             )
 
-            binding.ivChatIcon.setOnClickListener {
+            teacher.avatarUrl?.let { url ->
+                binding.ivAvatar.load(url) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_person)
+                    error(R.drawable.ic_person)
+                    transformations(CircleCropTransformation())
+                }
+            } ?: run {
+                binding.ivAvatar.setImageResource(R.drawable.ic_person)
+            }
+
+            binding.root.setOnClickListener {
                 onChatClick(teacher)
             }
         }

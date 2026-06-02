@@ -6,6 +6,7 @@ data class TeacherWithAvailability(
     val id: String,
     val fullName: String,
     val course: String?,
+    val avatarUrl: String?,
     val isAvailable: Boolean,
     val timeFrom: String,
     val timeTo: String

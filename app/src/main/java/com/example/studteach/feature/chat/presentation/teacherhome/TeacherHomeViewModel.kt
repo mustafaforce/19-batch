@@ -94,6 +94,13 @@ class TeacherHomeViewModel(
         _uiState.value = _uiState.value?.copy(saveSuccess = false)
     }
 
+    fun refreshName() {
+        viewModelScope.launch {
+            val user = getCurrentUserUseCase()
+            _uiState.value = _uiState.value?.copy(teacherName = user?.fullName ?: "")
+        }
+    }
+
     class Factory : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

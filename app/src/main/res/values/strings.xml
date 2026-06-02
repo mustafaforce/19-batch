@@ -14,6 +14,7 @@
     <string name="btn_send">Send</string>
     <string name="btn_set_availability">Set Availability</string>
     <string name="btn_save">Save</string>
+    <string name="btn_profile">Profile</string>
 
     <string name="link_no_account">Don\'t have an account? Register</string>
     <string name="link_have_account">Already have an account? Log In</string>

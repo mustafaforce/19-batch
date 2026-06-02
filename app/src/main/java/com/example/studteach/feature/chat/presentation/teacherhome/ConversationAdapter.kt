@@ -3,6 +3,9 @@ package com.example.studteach.feature.chat.presentation.teacherhome
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.transform.CircleCropTransformation
+import com.example.studteach.R
 import com.example.studteach.databinding.ItemConversationBinding
 import com.example.studteach.feature.chat.domain.model.Conversation
 
@@ -42,6 +45,17 @@ class ConversationAdapter(
                 conversation.lastMessage
             }
             binding.tvTime.text = conversation.lastMessageTime
+
+            conversation.avatarUrl?.let { url ->
+                binding.ivAvatar.load(url) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_person)
+                    error(R.drawable.ic_person)
+                    transformations(CircleCropTransformation())
+                }
+            } ?: run {
+                binding.ivAvatar.setImageResource(R.drawable.ic_person)
+            }
 
             binding.root.setOnClickListener {
                 onConversationClick(conversation)

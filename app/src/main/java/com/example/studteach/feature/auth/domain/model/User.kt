@@ -11,6 +11,11 @@ data class User(
     val email: String = "",
     val role: String = "",
     val course: String? = null,
+    val level: String? = null,
+    val term: String? = null,
+    val department: String? = null,
+    @SerialName("avatar_url")
+    val avatarUrl: String? = null,
     @SerialName("created_at")
     val createdAt: String? = null
 )

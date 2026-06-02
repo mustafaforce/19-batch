@@ -16,6 +16,7 @@ import com.example.studteach.feature.auth.data.AuthRepositoryImpl
 import com.example.studteach.feature.auth.presentation.login.LoginActivity
 import com.example.studteach.feature.chat.data.TeacherWithAvailability
 import com.example.studteach.feature.chat.presentation.chatroom.ChatActivity
+import com.example.studteach.feature.setting.presentation.profile.ProfileActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,7 +38,12 @@ class StudentHomeActivity : AppCompatActivity() {
         setupRecyclerView()
         observeViewModel()
 
-        viewModel.loadTeachers()
+        viewModel.loadData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshName()
     }
 
     private fun applyToolbarInsets() {
@@ -53,7 +59,12 @@ class StudentHomeActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         binding.toolbar.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.action_logout) {
+            when (item.itemId) {
+                R.id.action_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                    true
+                }
+                R.id.action_logout -> {
                 CoroutineScope(Dispatchers.IO).launch {
                     AuthRepositoryImpl(StudTeachApp.instance.supabase).logout()
                 }
@@ -61,8 +72,10 @@ class StudentHomeActivity : AppCompatActivity() {
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 finish()
-                true
-            } else false
+                    true
+                }
+                else -> false
+            }
         }
     }
 
@@ -79,6 +92,12 @@ class StudentHomeActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         viewModel.uiState.observe(this) { state ->
+            binding.toolbar.title = if (state.studentName.isNotEmpty()) {
+                "Hello, ${state.studentName}"
+            } else {
+                getString(R.string.title_student_home)
+            }
+
             if (state.isLoading) return@observe
 
             if (state.teachers.isEmpty()) {
@@ -101,6 +120,7 @@ class StudentHomeActivity : AppCompatActivity() {
             putExtra("USER_ID", teacher.id)
             putExtra("USER_NAME", teacher.fullName)
             putExtra("IS_AVAILABLE", teacher.isAvailable)
+            putExtra("AVATAR_URL", teacher.avatarUrl)
         }
         startActivity(intent)
     }
