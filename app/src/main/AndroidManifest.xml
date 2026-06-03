@@ -46,6 +46,11 @@
             android:exported="false" />
 
         <activity
+            android:name=".feature.chat.presentation.imageviewer.ImageViewerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Studteach.ImageViewer" />
+
+        <activity
             android:name=".feature.chat.presentation.chatroom.ChatActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />

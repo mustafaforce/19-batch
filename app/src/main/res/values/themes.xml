@@ -30,6 +30,12 @@
         <item name="android:statusBarColor">@color/primary</item>
     </style>
 
+    <style name="Theme.Studteach.ImageViewer" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
     <!-- Primary Button: Charcoal fill, off-white text, inset shadow feel -->
     <style name="Widget.Studteach.Button.Primary" parent="Widget.Material3.Button">
         <item name="android:backgroundTint">@color/primary</item>

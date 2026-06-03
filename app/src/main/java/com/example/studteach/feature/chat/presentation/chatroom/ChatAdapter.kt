@@ -1,5 +1,6 @@
 package com.example.studteach.feature.chat.presentation.chatroom
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import coil.transform.RoundedCornersTransformation
 import com.example.studteach.databinding.ItemMessageReceivedBinding
 import com.example.studteach.databinding.ItemMessageSentBinding
 import com.example.studteach.feature.chat.domain.model.Message
+import com.example.studteach.feature.chat.presentation.imageviewer.ImageViewerActivity
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -93,6 +95,12 @@ class ChatAdapter(
                     crossfade(true)
                     transformations(RoundedCornersTransformation(12f))
                 }
+                binding.ivImage.setOnClickListener {
+                    val context = binding.root.context
+                    val intent = Intent(context, ImageViewerActivity::class.java)
+                    intent.putExtra("IMAGE_URL", message.imageUrl)
+                    context.startActivity(intent)
+                }
             }
 
             if (hasText) {
@@ -117,6 +125,12 @@ class ChatAdapter(
                 binding.ivImage.load(message.imageUrl) {
                     crossfade(true)
                     transformations(RoundedCornersTransformation(12f))
+                }
+                binding.ivImage.setOnClickListener {
+                    val context = binding.root.context
+                    val intent = Intent(context, ImageViewerActivity::class.java)
+                    intent.putExtra("IMAGE_URL", message.imageUrl)
+                    context.startActivity(intent)
                 }
             }
 
