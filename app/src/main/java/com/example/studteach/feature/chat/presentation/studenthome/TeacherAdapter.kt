@@ -40,7 +40,13 @@ class TeacherAdapter(
         fun bind(teacher: TeacherWithAvailability) {
             binding.tvTeacherName.text = teacher.fullName
             binding.tvCourseName.text = teacher.course ?: "No course assigned"
-            binding.tvAvailability.text = if (teacher.isAvailable) "Available" else "Unavailable"
+
+            val hasSchedule = teacher.timeFrom.isNotBlank() && teacher.timeTo.isNotBlank()
+            binding.tvAvailability.text = if (hasSchedule) {
+                "${teacher.timeFrom} – ${teacher.timeTo}"
+            } else {
+                "No schedule set"
+            }
 
             binding.viewStatus.setBackgroundResource(
                 if (teacher.isAvailable) {

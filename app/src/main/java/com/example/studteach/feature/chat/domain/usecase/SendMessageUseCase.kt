@@ -9,8 +9,9 @@ class SendMessageUseCase(
     suspend operator fun invoke(
         senderId: String,
         receiverId: String,
-        content: String
+        content: String,
+        imageUrl: String? = null
     ): Result<Message> {
-        return chatRepository.sendMessage(senderId, receiverId, content)
+        return chatRepository.sendMessage(senderId, receiverId, content, imageUrl)
     }
 }
