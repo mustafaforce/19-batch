@@ -11,6 +11,8 @@ data class Message(
     @SerialName("receiver_id")
     val receiverId: String = "",
     val content: String = "",
+    @SerialName("image_url")
+    val imageUrl: String? = null,
     @SerialName("created_at")
     val createdAt: String = ""
 )

@@ -70,7 +70,7 @@ dependencies {
     implementation(libs.supabase.postgrest.kt)
     implementation(libs.supabase.realtime.kt)
     implementation(libs.supabase.storage.kt)
-    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.okhttp)
     implementation(libs.coil.compose)
 
     testImplementation(libs.junit)

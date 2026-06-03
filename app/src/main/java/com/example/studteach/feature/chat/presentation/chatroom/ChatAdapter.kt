@@ -1,8 +1,11 @@
 package com.example.studteach.feature.chat.presentation.chatroom
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.transform.RoundedCornersTransformation
 import com.example.studteach.databinding.ItemMessageReceivedBinding
 import com.example.studteach.databinding.ItemMessageSentBinding
 import com.example.studteach.feature.chat.domain.model.Message
@@ -79,7 +82,23 @@ class ChatAdapter(
         private val binding: ItemMessageSentBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
-            binding.tvMessage.text = message.content
+            val hasImage = !message.imageUrl.isNullOrBlank()
+            val hasText = message.content.isNotBlank()
+
+            binding.ivImage.visibility = if (hasImage) View.VISIBLE else View.GONE
+            binding.tvMessage.visibility = if (hasText) View.VISIBLE else View.GONE
+
+            if (hasImage) {
+                binding.ivImage.load(message.imageUrl) {
+                    crossfade(true)
+                    transformations(RoundedCornersTransformation(12f))
+                }
+            }
+
+            if (hasText) {
+                binding.tvMessage.text = message.content
+            }
+
             binding.tvTime.text = formatTimestamp(message.createdAt)
         }
     }
@@ -88,7 +107,23 @@ class ChatAdapter(
         private val binding: ItemMessageReceivedBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
-            binding.tvMessage.text = message.content
+            val hasImage = !message.imageUrl.isNullOrBlank()
+            val hasText = message.content.isNotBlank()
+
+            binding.ivImage.visibility = if (hasImage) View.VISIBLE else View.GONE
+            binding.tvMessage.visibility = if (hasText) View.VISIBLE else View.GONE
+
+            if (hasImage) {
+                binding.ivImage.load(message.imageUrl) {
+                    crossfade(true)
+                    transformations(RoundedCornersTransformation(12f))
+                }
+            }
+
+            if (hasText) {
+                binding.tvMessage.text = message.content
+            }
+
             binding.tvTime.text = formatTimestamp(message.createdAt)
         }
     }

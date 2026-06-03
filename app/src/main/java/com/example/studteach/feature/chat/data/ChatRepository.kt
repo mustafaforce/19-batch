@@ -23,7 +23,8 @@ class ChatRepository(
     suspend fun sendMessage(
         senderId: String,
         receiverId: String,
-        content: String
+        content: String,
+        imageUrl: String? = null
     ): Result<Message> {
         return runCatching {
             supabase.postgrest.from("messages")
@@ -31,7 +32,8 @@ class ChatRepository(
                     Message(
                         senderId = senderId,
                         receiverId = receiverId,
-                        content = content
+                        content = content,
+                        imageUrl = imageUrl
                     )
                 ) {
                     select()
@@ -122,7 +124,9 @@ class ChatRepository(
                 studentId = sid,
                 studentName = student?.fullName ?: "Unknown",
                 avatarUrl = student?.avatarUrl,
-                lastMessage = msg.content,
+                lastMessage = msg.content.ifBlank {
+                    if (msg.imageUrl != null) "Photo" else ""
+                },
                 lastMessageTime = formatTimestamp(msg.createdAt),
                 lastMessageIsMine = msg.senderId == teacherId
             )

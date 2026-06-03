@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.studteach.StudTeachApp
+import com.example.studteach.core.storage.StorageRepository
 import com.example.studteach.feature.auth.data.AuthRepositoryImpl
 import com.example.studteach.feature.auth.domain.usecase.GetCurrentUserUseCase
 import com.example.studteach.feature.chat.data.ChatRepository
@@ -17,7 +18,8 @@ import kotlinx.coroutines.launch
 class ChatViewModel(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
-    private val observeMessagesUseCase: ObserveMessagesUseCase
+    private val observeMessagesUseCase: ObserveMessagesUseCase,
+    private val storageRepository: StorageRepository
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData(ChatUiState())
@@ -80,15 +82,40 @@ class ChatViewModel(
     }
 
     fun sendMessage(content: String) {
+        sendInternal(content, null)
+    }
+
+    fun sendImage(content: String, imageBytes: ByteArray, fileName: String) {
         viewModelScope.launch {
-            sendMessageUseCase(currentUserId, otherUserId, content)
-                .onSuccess { message ->
-                    val current = _uiState.value?.messages?.toMutableList() ?: mutableListOf()
-                    current.add(message)
-                    _uiState.value = _uiState.value?.copy(messages = current)
+            _uiState.value = _uiState.value?.copy(isLoading = true)
+            storageRepository.uploadChatImage(currentUserId, otherUserId, imageBytes, fileName)
+                .onSuccess { imageUrl ->
+                    sendInternal(content, imageUrl)
                 }
                 .onFailure { error ->
                     _uiState.value = _uiState.value?.copy(
+                        isLoading = false,
+                        errorMessage = error.message ?: "Failed to upload image"
+                    )
+                }
+        }
+    }
+
+    private fun sendInternal(content: String, imageUrl: String?) {
+        val finalContent = content.ifBlank { if (imageUrl != null) " " else "" }
+        viewModelScope.launch {
+            sendMessageUseCase(currentUserId, otherUserId, finalContent, imageUrl)
+                .onSuccess { message ->
+                    val current = _uiState.value?.messages?.toMutableList() ?: mutableListOf()
+                    current.add(message)
+                    _uiState.value = _uiState.value?.copy(
+                        isLoading = false,
+                        messages = current
+                    )
+                }
+                .onFailure { error ->
+                    _uiState.value = _uiState.value?.copy(
+                        isLoading = false,
                         errorMessage = error.message ?: "Failed to send"
                     )
                 }
@@ -103,10 +130,12 @@ class ChatViewModel(
             val app = StudTeachApp.instance
             val authRepo = AuthRepositoryImpl(app.supabase)
             val chatRepo = ChatRepository(app.supabase)
+            val storageRepo = StorageRepository(app.supabase)
             return ChatViewModel(
                 GetCurrentUserUseCase(authRepo),
                 SendMessageUseCase(chatRepo),
-                ObserveMessagesUseCase(chatRepo)
+                ObserveMessagesUseCase(chatRepo),
+                storageRepo
             ) as T
         }
     }

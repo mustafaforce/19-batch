@@ -10,6 +10,7 @@ class StorageRepository(
 ) {
     companion object {
         private const val BUCKET = "avatars"
+        private const val CHAT_BUCKET = "chat-images"
     }
 
     suspend fun uploadAvatar(userId: String, fileBytes: ByteArray, fileName: String): Result<String> {
@@ -25,6 +26,22 @@ class StorageRepository(
             }.last()
 
             supabase.storage.from(BUCKET).publicUrl(path)
+        }
+    }
+
+    suspend fun uploadChatImage(senderId: String, receiverId: String, fileBytes: ByteArray, fileName: String): Result<String> {
+        return runCatching {
+            val conversationKey = if (senderId < receiverId) "$senderId-$receiverId" else "$receiverId-$senderId"
+            val path = "$conversationKey/$fileName"
+
+            supabase.storage.from(CHAT_BUCKET).uploadAsFlow(
+                path = path,
+                data = fileBytes
+            ) {
+                upsert = true
+            }.last()
+
+            supabase.storage.from(CHAT_BUCKET).publicUrl(path)
         }
     }
 }

@@ -1,8 +1,11 @@
 package com.example.studteach.feature.chat.presentation.chatroom
 
+import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -18,6 +21,12 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
     private val viewModel: ChatViewModel by viewModels { ChatViewModel.Factory() }
     private var adapter: ChatAdapter? = null
+
+    private val imagePicker = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { onImagePicked(it) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +97,10 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun setupInput() {
+        binding.btnAttach.setOnClickListener {
+            imagePicker.launch("image/*")
+        }
+
         binding.btnSend.setOnClickListener {
             val content = binding.etMessage.text.toString().trim()
             if (content.isNotEmpty()) {
@@ -95,6 +108,26 @@ class ChatActivity : AppCompatActivity() {
                 binding.etMessage.text.clear()
             }
         }
+    }
+
+    private fun onImagePicked(uri: Uri) {
+        val inputStream = contentResolver.openInputStream(uri) ?: return
+        val bytes = inputStream.use { it.readBytes() }
+        val fileName = getFileName(uri) ?: "image_${System.currentTimeMillis()}.jpg"
+        val caption = binding.etMessage.text.toString().trim()
+        binding.etMessage.text.clear()
+
+        viewModel.sendImage(caption, bytes, fileName)
+    }
+
+    private fun getFileName(uri: Uri): String? {
+        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (cursor.moveToFirst() && nameIndex >= 0) {
+                return cursor.getString(nameIndex)
+            }
+        }
+        return null
     }
 
     private fun observeViewModel() {

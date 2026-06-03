@@ -56,6 +56,12 @@ class TeacherHomeViewModel(
         }
     }
 
+    fun refreshConversations() {
+        viewModelScope.launch {
+            loadConversations()
+        }
+    }
+
     fun onTimeFromChanged(time: String) {
         _uiState.value = _uiState.value?.copy(timeFrom = time)
     }

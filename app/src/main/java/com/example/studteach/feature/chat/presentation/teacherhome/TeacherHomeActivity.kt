@@ -47,6 +47,7 @@ class TeacherHomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.refreshName()
+        viewModel.refreshConversations()
     }
 
     private fun applyToolbarInsets() {
